@@ -1,10 +1,11 @@
+<?php 
+ob_start();
+?> 
+
+    
 <?php
-if ($form_is_submitted == true && $errors_detected == false) {
-    setcookie('site_title', $clean['site_title'], 0, '/');
-    echo "cookie".$_COOKIE['site_title'];
-}
-?>
-<?php
+
+
 // Store valid styles in an array for convenience
 $site_styles = array('plain', 'light', 'dark'); 
 
@@ -19,6 +20,7 @@ $errors_detected = false;
 // Check for submitted form
 if (isset($_POST['personalise'])) {
     $form_is_submitted = true;
+    echo "form is submitted";
     
     // Validate the site title
     if (isset($_POST['site_title'])) {
@@ -26,10 +28,11 @@ if (isset($_POST['personalise'])) {
         if ($trimmed != '') {
             $clean['site_title'] = $trimmed;
             echo "clean".$clean['site_title'];
+            setcookie('site_title', htmlentities($trimmed), time()+(10*24*60*60), '/');
+
         } else {
             $errors[] = 'Site title is empty';
             $errors_detected = true;
-             echo "error".$errors['site_title'];
         }
     } else {
         $errors[] = 'Site title not submitted';
@@ -39,13 +42,15 @@ if (isset($_POST['personalise'])) {
     // Use the built-in "in_array" function to validate the style selection
     if (isset($_POST['site_style']) && in_array($_POST['site_style'], $site_styles)) {
         $clean['site_style'] = $_POST['site_style'];
+        
+        setcookie('style', $_POST['site_style'], time()+(10*24*60*60), '/');
+        ob_end_flush();
+        
     } else {
         $errors[] = 'Style not submitted or not valid';
         $errors_detected = true;
     }
 }
-
-// If the form was submitted and data was valid...
 
 
 ?>
@@ -54,12 +59,17 @@ if (isset($_POST['personalise'])) {
 <head>
     <title>Web Programming using PHP</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="css/plain.css" />
+    <?php
+    $stylePath = isset($_COOKIE['style'])? "css/".$_COOKIE['style'].".css" : "css/plain.css" ;
+    ?>
+    <link rel="stylesheet" type="text/css" href="<?php echo $stylePath; ?>" />
 </head>
 <body>
 	<div id="page">
     <?php
-      $title  = isset($_COOKIE['site_title']) ? $_COOKIE['site-title']:"P1" ;
+
+      $title  = isset($_COOKIE['site_title']) ? $_COOKIE['site_title']:"P1" ;
+
     ?>
         
         <h1><a href="index.php"><?php echo $title;?> </a></h1>
