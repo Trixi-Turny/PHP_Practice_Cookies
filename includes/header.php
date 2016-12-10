@@ -1,13 +1,12 @@
 <?php 
 ob_start();
-?> 
-
-    
+?>    
 <?php
-
+date_default_timezone_set('Europe/London');
 
 // Store valid styles in an array for convenience
 $site_styles = array('plain', 'light', 'dark'); 
+$cookieExpiry = array('0', '86400', '604800');
 
 // Variables to store data/errors
 $clean = array();
@@ -21,15 +20,17 @@ $errors_detected = false;
 if (isset($_POST['personalise'])) {
     $form_is_submitted = true;
     echo "form is submitted";
-    
+    if(isset($_POST['expiry']) && in_array($_POST['expiry'], $cookieExpiry)){
+        $clean['expiry'] = $_POST['expiry'];
+        $setExpiry = $_POST['expiry'];
+    }
     // Validate the site title
     if (isset($_POST['site_title'])) {
         $trimmed = trim($_POST['site_title']);
         if ($trimmed != '') {
             $clean['site_title'] = $trimmed;
             echo "clean".$clean['site_title'];
-            setcookie('site_title', htmlentities($trimmed), time()+(10*24*60*60), '/');
-
+            setcookie('site_title', htmlentities($trimmed), time()+$setExpiry, '/');
         } else {
             $errors[] = 'Site title is empty';
             $errors_detected = true;
@@ -37,14 +38,13 @@ if (isset($_POST['personalise'])) {
     } else {
         $errors[] = 'Site title not submitted';
         $errors_detected = true;
-    }
-    
+    } 
     // Use the built-in "in_array" function to validate the style selection
     if (isset($_POST['site_style']) && in_array($_POST['site_style'], $site_styles)) {
         $clean['site_style'] = $_POST['site_style'];
         
-        setcookie('style', $_POST['site_style'], time()+(10*24*60*60), '/');
-        ob_end_flush();
+        setcookie('style', $_POST['site_style'], time()+$setExpiry, '/');
+        ob_end_flush();      
         
     } else {
         $errors[] = 'Style not submitted or not valid';
@@ -67,9 +67,7 @@ if (isset($_POST['personalise'])) {
 <body>
 	<div id="page">
     <?php
-
       $title  = isset($_COOKIE['site_title']) ? $_COOKIE['site_title']:"P1" ;
-
     ?>
         
         <h1><a href="index.php"><?php echo $title;?> </a></h1>
