@@ -19,25 +19,9 @@ include 'includes/header.php';
         mollit anim id est laborum.</p>
 
 
-  <?php
-
- $self = htmlentities($_SERVER['PHP_SELF']);
-
-  
-?>
-
-            <form action = "<?php $self ;?>" method = "POST">
-                <fieldset>
-
-                <input type = text value = "<?php ?>" name = "title">
-
-                <input type = "submit" name = "submit" value = "change title"> 
-
-                </fieldset>
-            </form>
-        
-<?php
 // Include the footer and closing body/html tags
+
+<?php
 include 'includes/footer.php';
 ?>
 
